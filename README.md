@@ -316,4 +316,4 @@ This project is currently in an early but functional prototype stage, with:
 
 ## License
 
-Add a license file before broader open-source distribution.
+MTI
