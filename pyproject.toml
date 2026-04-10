@@ -1,0 +1,41 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-evalkit"
+version = "0.1.0"
+description = "Lightweight, CI-native regression and behavior-aware evaluation toolkit for black-box agent workflows."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+  "typer>=0.12,<1.0",
+]
+
+[project.optional-dependencies]
+dev = [
+  "pytest>=8.0,<9.0",
+  "ruff>=0.11.0,<1.0",
+  "pre-commit>=4.0,<5.0",
+]
+
+[project.scripts]
+aek = "agent_evalkit.cli:app"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+extend-exclude = [
+  "examples",
+  "**/__pycache__",
+  ".ruff_cache",
+  ".pytest_cache",
+  ".pytest_tmp*",
+  "pytest-cache-files-*",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]

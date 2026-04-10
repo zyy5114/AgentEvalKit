@@ -1,0 +1,21 @@
+task_id: echo_simple
+description: Echo back user text in a deterministic fake agent.
+input:
+  prompt: "hello world"
+adapter:
+  type: python_callable
+  target: examples.fake_agents:echo_agent
+output_schema: {type: object, required: [text], properties: {text: {type: string}}}
+behavior_rules:
+  forbid_tools:
+    - web.search
+    - shell.exec
+  require_tools_any_of:
+    - [memory.read]
+    - [trace.log, trace.capture]
+  max_steps: 3
+  max_tool_calls: 1
+  trace_required: true
+  timeout_sec: 5
+scorers:
+  - type: exact_match

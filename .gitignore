@@ -1,0 +1,18 @@
+# Python cache/artifacts
+__pycache__/
+*.py[cod]
+
+# Tooling caches
+.pytest_cache/
+.ruff_cache/
+.pre-commit-cache/
+.pre-commit-cache-*/
+
+# Local temp/runtime dirs
+.tmp/
+.pytest_tmp/
+.pytest_tmp_runrecord_*/
+pytest-cache-files-*/
+pytest_tmp_root*/
+pytest-of-*/
+aek-manual-*/

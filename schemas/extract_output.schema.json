@@ -1,0 +1,37 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentevalkit.dev/schemas/extract_output.schema.json",
+  "title": "ExtractOutput",
+  "description": "Structured extraction output with a normalized answer and supporting citations.",
+  "type": "object",
+  "required": ["answer", "citations"],
+  "properties": {
+    "answer": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Final extracted answer text."
+    },
+    "citations": {
+      "type": "array",
+      "description": "Evidence snippets supporting the answer.",
+      "items": {
+        "type": "object",
+        "required": ["source_id", "quote"],
+        "properties": {
+          "source_id": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Stable source identifier such as a filename or URL key."
+          },
+          "quote": {
+            "type": "string",
+            "minLength": 1,
+            "description": "Short excerpt backing the extracted answer."
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

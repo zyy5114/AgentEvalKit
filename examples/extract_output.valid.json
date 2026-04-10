@@ -1,0 +1,13 @@
+{
+  "answer": "OpenAI was founded in 2015.",
+  "citations": [
+    {
+      "source_id": "doc_001",
+      "quote": "OpenAI was founded in December 2015."
+    },
+    {
+      "source_id": "doc_002",
+      "quote": "The organization started as a nonprofit AI research lab in 2015."
+    }
+  ]
+}

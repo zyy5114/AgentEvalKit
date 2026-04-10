@@ -1,0 +1,96 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://agentevalkit.dev/schemas/task_spec.schema.json",
+  "title": "AgentEvalKit Task Specification",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "task_id",
+    "description",
+    "input",
+    "adapter",
+    "output_schema",
+    "behavior_rules",
+    "scorers"
+  ],
+  "properties": {
+    "task_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "description": {
+      "type": "string",
+      "minLength": 1
+    },
+    "input": {
+      "type": "object"
+    },
+    "adapter": {
+      "type": "object"
+    },
+    "output_schema": {
+      "type": "object"
+    },
+    "behavior_rules": {
+      "$ref": "#/$defs/behavior_rules"
+    },
+    "scorers": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "$ref": "#/$defs/scorer"
+      }
+    }
+  },
+  "$defs": {
+    "behavior_rules": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "forbid_tools": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "require_tools_any_of": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "max_steps": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "trace_required": {
+          "type": "boolean"
+        },
+        "max_tool_calls": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "timeout_sec": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        }
+      }
+    },
+    "scorer": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "type"
+      ],
+      "properties": {
+        "type": {
+          "type": "string",
+          "minLength": 1
+        }
+      }
+    }
+  }
+}
