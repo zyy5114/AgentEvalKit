@@ -1,0 +1,102 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ci:
+    name: Test And Offline Example
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e ".[dev]"
+          python -m pip install pydantic PyYAML jsonschema
+
+      - name: Run ruff
+        run: python -m ruff check .
+
+      - name: Run pytest
+        run: |
+          mkdir -p artifacts
+          python -m pytest -q --junitxml=artifacts/pytest-junit.xml
+
+      - name: Run deterministic offline example evaluation
+        run: |
+          python - <<'PY'
+          from __future__ import annotations
+
+          import json
+          from datetime import UTC, datetime
+          from hashlib import sha256
+          from pathlib import Path
+
+          from agent_evalkit.adapters.python_adapter import run_python_callable
+          from agent_evalkit.runners import build_run_record, persist_run_record
+          from examples.fake_agent import fake_local_agent, offline_demo_inputs
+
+          payload = offline_demo_inputs()[0]
+          result = run_python_callable(target=fake_local_agent, input_payload=payload)
+          if result.status != "succeeded":
+              raise SystemExit(f"Deterministic example failed: {result.stderr}")
+
+          artifacts_dir = Path("artifacts")
+          artifacts_dir.mkdir(parents=True, exist_ok=True)
+
+          summary = {
+              "task_id": payload["task_id"],
+              "status": result.status,
+              "elapsed_sec": result.elapsed_sec,
+              "final_output": result.final_output,
+              "trace_event_count": len(result.trace_events),
+          }
+          (artifacts_dir / "example_eval.json").write_text(
+              json.dumps(summary, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+
+          payload_hash = sha256(
+              json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+          ).hexdigest()
+          now = datetime.now(tz=UTC)
+          record = build_run_record(
+              run_id="ci_example_run",
+              task_hash=payload_hash,
+              fingerprint_stub={
+                  "adapter_type": "python_callable",
+                  "network_enabled": False,
+                  "target": result.target,
+              },
+              runs_root=artifacts_dir / "runs",
+              started_at=now,
+              finished_at=now,
+              status=result.status,
+          )
+          persist_run_record(record)
+          PY
+
+      - name: Upload CI artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ci-artifacts
+          if-no-files-found: ignore
+          retention-days: 7
+          path: |
+            artifacts/pytest-junit.xml
+            artifacts/example_eval.json
+            artifacts/runs/ci_example_run/run_record.json
