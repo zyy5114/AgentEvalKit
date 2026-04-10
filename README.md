@@ -316,4 +316,4 @@ This project is currently in an early but functional prototype stage, with:
 
 ## License
 
-MTI
+MIT
