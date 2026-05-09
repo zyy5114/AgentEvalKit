@@ -121,6 +121,7 @@ tests/           # unit and integration tests
 docs/            # design notes
 .github/workflows/ # CI workflow
 ```
+<img width="2400" height="3260" alt="image" src="https://github.com/user-attachments/assets/e4e54bf4-ad49-4808-9df5-8236bd678485" />
 
 ---
 
